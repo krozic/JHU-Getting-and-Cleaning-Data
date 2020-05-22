@@ -1,0 +1,15 @@
+"0","```r
+spraySums <- ddply(InsectSprays, .(spray), summarise, sum = ave(count, FUN = sum))
+
+dim(spraySums)
+[1] 72  2
+
+head(spraySums)
+  spray sum
+1     A 174
+2     A 174
+3     A 174
+4     A 174
+5     A 174
+6     A 174
+```"

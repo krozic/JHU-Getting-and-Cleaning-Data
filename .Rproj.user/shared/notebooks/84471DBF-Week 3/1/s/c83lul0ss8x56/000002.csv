@@ -1,0 +1,9 @@
+"0","```r
+library(Hmisc); library(plyr)
+restData2 <- mutate(restData, zipGroups = cut2(zipCode, g = 4))
+#New dataframe with new 'zipGroups' variable that is a function of one of the original variables
+
+table(restData2$zipGroups)
+[-21226,21205) [ 21205,21220) [ 21220,21227) [ 21227,21287] 
+           338            375            300            314 
+```"

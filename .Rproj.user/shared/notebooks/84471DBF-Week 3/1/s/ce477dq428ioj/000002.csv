@@ -1,0 +1,17 @@
+"0","```r
+mtcars$carname <- rownames(mtcars)
+carMelt <- melt(mtcars, id = c(\"carname\", \"gear\", \"cyl\"), 
+                measure.vars = c(\"mpg\", \"hp\"))
+
+head(carMelt, n = 3)
+         carname gear cyl variable value
+62  Ferrari Dino    5   6       hp   175
+63 Maserati Bora    5   8       hp   335
+64    Volvo 142E    4   4       hp   109
+
+tail(carMelt, n = 3)
+        carname gear cyl variable value
+1     Mazda RX4    4   6      mpg  21.0
+2 Mazda RX4 Wag    4   6      mpg  21.0
+3    Datsun 710    4   4      mpg  22.8
+```"

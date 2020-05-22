@@ -1,0 +1,8 @@
+"0","```r
+fakeData = rnorm(1e5)
+object.size(fakeData)
+800048 bytes
+
+print(object.size(fakeData), units = \"Mb\")
+0.8 Mb
+```"

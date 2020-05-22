@@ -1,0 +1,8 @@
+"0","```r
+library(Hmisc)
+restData$zipGroups <- cut2(restDat$zipCode, g = 4)
+
+table(restData$zipGroups)
+[-21226,21205) [ 21205,21220) [ 21220,21227) [ 21227,21287] 
+           338            375            300            314 
+```"

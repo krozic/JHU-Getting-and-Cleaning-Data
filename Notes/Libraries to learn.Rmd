@@ -1,0 +1,16 @@
+---
+title: "learning"
+output: html_notebook
+---
+
+Things to learn
+
+library(xlsx)
+libray(XML)
+library(jsonlite)
+library(data.table)
+library(httr)
+
+Functions
+table() - does counts based on the constriction
+data.table()

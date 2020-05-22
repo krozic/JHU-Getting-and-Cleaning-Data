@@ -1,0 +1,15 @@
+"0","```r
+yesno <- sample(c(\"yes\", \"no\"), size = 10, replace = TRUE)
+#Creates vector of yes's and no's
+yesnofac <- factor(yesno, levels = c(\"yes\", \"no\"))
+#Turn that vector into a factor variable
+#Normally the values are low to high alphabetically, this changes it
+
+relevel(yesnofac, ref = \"yes\")
+#relevel(): make the reference class be set to 'yes'
+ [1] no  no  yes yes yes no  yes no  yes no 
+Levels: yes no
+
+as.numeric(yesnofac)
+ [1] 2 2 1 1 1 2 1 2 1 2
+```"

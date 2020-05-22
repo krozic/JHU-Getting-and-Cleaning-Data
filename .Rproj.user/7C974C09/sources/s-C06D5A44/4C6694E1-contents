@@ -1,0 +1,81 @@
+---
+title: "Amy Ding Conversation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+What kind of work are you looking for?
+
+Data gathering?
+
+  - Web scraping
+  - Researching
+  
+Data Organization?
+
+  - Making messy data look good?
+  - Organizing large data into many subsets of data based on conditions?
+  - Automating data manipulation with scripts
+  
+Data Storage?
+
+  - CSV files, other files, databases(SQL, mongo)
+  
+Data analysis?
+
+  - Statistical analyses/inferences?
+  - Proving relationships between variables?
+  - Discovering relationships between variables?
+  - Exploring data?
+  
+Machine Learning?
+
+  - Logistic/Linear Regression?
+  - PCA (Principal Component Analysis) for dimensionality reduction or visualization
+  - Kernel non-linear classification systems
+  
+Deep learning?
+
+  - Neural nets?
+  - Tuning of ML/AI systems?
+  
+  friend portfolio 
+  
+Data Presentation?
+
+  - Markdown visualizations with methodology
+  - Presenting data in dashboards? 
+  
+  
+  
+tech
+
+data
+
+use historical micro
+
+
+
+
+predictive model
+neighbourhood cities with highest potential
+
+house
+- size
+- age
+- # bedroom
+- # washroom
+
+microlevel (microeconomics?)
+- population
+job growth
+employment level
+crime rate
+gdp growth
+
+paper
+list of factors to look at when you buy a home
+

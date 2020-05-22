@@ -1,0 +1,8 @@
+"0","```r
+restData$zipWrong <- ifelse(restData$zipCode < 0, TRUE, FALSE)
+#Is zip < 0? Return TRUE if cond. is TRUE, else return FALSE
+table(restData$zipWrong, restData$zipCode < 0)
+        FALSE TRUE
+  FALSE  1326    0
+  TRUE      0    1
+```"

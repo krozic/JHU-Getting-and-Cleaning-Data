@@ -1,0 +1,10 @@
+"0","```r
+sum(is.na(restData$councilDistrict))#how many NA values?
+[1] 0
+
+any(is.na(restDat$councilDistrict))#are there any NA values?
+[1] FALSE
+
+all(restData$zipCode > 0)#does every value satisfy this condition?
+[1] FALSE
+```"

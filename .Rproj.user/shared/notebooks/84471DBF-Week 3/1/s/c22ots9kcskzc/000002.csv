@@ -1,0 +1,10 @@
+"0","```r
+ddply(InsectSprays, .(spray), summarise, sum = sum(count))
+  spray sum
+1     A 174
+2     B 184
+3     C  25
+4     D  59
+5     E  42
+6     F 200
+```"

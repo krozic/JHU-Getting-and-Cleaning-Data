@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1589575915608.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "C95FA531",
+    "lastKnownWriteTime" : 1589683296,
+    "last_content_update" : 1589683296185,
+    "path" : "~/Data Science/Jobs/Requity Homes/Requity Homes Plan.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "67,0",
+        "marks" : "<:45,0\n>:45,0",
+        "scrollLine" : "60",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

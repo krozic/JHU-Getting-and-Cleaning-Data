@@ -1,0 +1,10 @@
+"0","```r
+restData$zcf <- factor(restData$zipCode)
+
+restData$zcf[1:10]
+ [1] 21206 21231 21224 21211 21223 21218 21205 21211 21205 21231
+32 Levels: -21226 21201 21202 21205 21206 21207 21208 21209 ... 21287
+
+class(restData$zcf)
+[1] \"factor\"
+```"

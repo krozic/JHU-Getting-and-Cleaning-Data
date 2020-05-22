@@ -1,0 +1,16 @@
+"0","```r
+colSums(is.na(restData))
+                        name                      zipCode 
+                           0                            0 
+                neighborhood              councilDistrict 
+                           0                            0 
+              policeDistrict                   Location.1 
+                           0                            0 
+  X2010.Census.Neighborhoods X2010.Census.Wards.Precincts 
+                        1327                         1327 
+                   Zip.Codes 
+                        1327 
+
+all(colSums(is.na(restData)) == 0)
+[1] FALSE
+```"

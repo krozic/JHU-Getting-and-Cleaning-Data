@@ -1,0 +1,75 @@
+---
+title: "Requity Homes Plan"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+Hi Amy,
+
+I've spent some time looking over our notes for the predictive model project and did some brainstorming as to how this project could work and the services that I could provide.
+
+Since this goal is quite ambitious I thought I'd propose a multi-stage project. This is just a guideline to organize tasks and get the ball rolling, but it will also help to ensure that my plans align with your objective. (if you are interested in progressing).
+
+Stage 1:
+
+The first stage would be to acquire data and organize it into a clean dataset that can be used for modelling, visualizing, and predicting.
+
+As I understand there will be some organized data available to you (housing data) however we will also have to acquire some data through research and organize it ourselves.
+We can start by focusing on a set of economic variables to research and merge with the structured housing data.
+
+The end product of this stage should be a clean dataset containing much of the data that will be used for the analysis and prediction algorithms.
+
+This is the most tedious stage and will likely take the most time out of the entire process, however it will be the most  
+All of the data acquisition and restructuring steps will be recorded to ensure the dataset can be reproduced from raw data at any time.
+
+list potential variables in order of priority
+we can explore data after each new variable
+
+
+Stage 2:
+
+The second stage would involve exploring and analyzing the data to determine what variables may be the best predictors to use for the machine learning and deep learning algorithms.  
+
+Techniques we can employ include visualizng subsets of the data, using basic machine learning programs to reduce dimensionality or pinpoint redundant information, and visualizing subsets of data or reduced data.
+
+This experimentation will allow us to determine which hypothesese will provide the most potential moving forward and can help us to make informed decisions regarding any further data acquisition or feature extraction. 
+
+We may also learn that we need to further clean or reorganize the data to get the best results in the machine learning/deep learning stage.
+
+
+
+By using summarisation techniques and machine learning algorithms on subsets of the data we 
+This can be considered experimentation
+This will consist of some experimentation to 
+
+Stage 3:
+
+The third stage will involve developing machine learning and deep learning models to extract reproducible information describing relationships between the variables. 
+Based on the information we gathered from Stage 2 we will have a better idea of what variables to include and how to best optimize the systems.
+The goal of these systems would be to aid decision making process with respect to which geographic regions will contain the highest potential housing investments.
+
+I will also be researching the field of predictive modelling within the housing community to determine what the current state of the art algorithms are, how they work, and how we can use them.
+
+
+
+Our conversation was brief so I'll detail my current skills as well as my goals for the coming months.
+
+I currently have a good understanding of the entire data science pipeline and have done some work in each area including data acquisition (web scraping and database queries), data cleaning (raw data -> .csv, dealing with missing data), data visualization, and machine learning (some basic modelling, data transformations, and neural net applications).
+
+I am currently studying this field full-time and will be pursuing more deep learning projects very soon.
+
+When it comes to implementing these techniques I won't be as quick as someone with a graduate degree in the field, however I am dedicating ~12-16 hours each day to better my skills and expect to accomplish a lot over the course of the summer.
+
+
+
+
+
+Although this is an ambitious project, by taking it a step at a time, I believe we can build some useful datasets and analysis programs.
+
+
+you have the industry specific knowledge to provide intiuition towards what variables may be the most impactful and connections
+the friend can aid in the statistical analysis
+If your MSc. friend is still interested in the project, her statistical knowledge will be 

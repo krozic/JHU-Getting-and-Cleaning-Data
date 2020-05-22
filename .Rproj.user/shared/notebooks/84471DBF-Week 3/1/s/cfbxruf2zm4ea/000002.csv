@@ -1,0 +1,70 @@
+"0","```r
+warpbreaks$replicate <- rep(1:9, len = 54) #adds in another replicate variable
+xt <- xtabs(breaks ~., data = warpbreaks)
+#Variable that appears in table is 'breaks'
+#Break it down by all the other variables
+
+xt
+, , replicate = 1
+
+    tension
+wool  L  M  H
+   A 26 18 36
+   B 27 42 20
+
+, , replicate = 2
+
+    tension
+wool  L  M  H
+   A 30 21 21
+   B 14 26 21
+
+, , replicate = 3
+
+    tension
+wool  L  M  H
+   A 54 29 24
+   B 29 19 24
+
+, , replicate = 4
+
+    tension
+wool  L  M  H
+   A 25 17 18
+   B 19 16 17
+
+, , replicate = 5
+
+    tension
+wool  L  M  H
+   A 70 12 10
+   B 29 39 13
+
+, , replicate = 6
+
+    tension
+wool  L  M  H
+   A 52 18 43
+   B 31 28 15
+
+, , replicate = 7
+
+    tension
+wool  L  M  H
+   A 51 35 28
+   B 41 21 15
+
+, , replicate = 8
+
+    tension
+wool  L  M  H
+   A 26 30 15
+   B 20 39 16
+
+, , replicate = 9
+
+    tension
+wool  L  M  H
+   A 67 36 26
+   B 44 29 28
+```"

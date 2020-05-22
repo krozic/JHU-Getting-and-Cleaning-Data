@@ -1,0 +1,12 @@
+"0","```r
+X[(X$var1 <= 3 & X$var3 > 11), ]
+  var1 var2 var3
+1    2   NA   15
+2    3   NA   12
+
+X[(X$var1 <= 3 | X$var3 > 15), ]
+  var1 var2 var3
+1    2   NA   15
+4    1   10   11
+2    3   NA   12
+```"

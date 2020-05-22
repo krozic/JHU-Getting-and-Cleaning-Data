@@ -1,0 +1,21 @@
+"0","```r
+data(UCBAdmissions)
+DF = as.data.frame(UCBAdmissions)
+
+summary(DF)
+      Admit       Gender   Dept       Freq      
+ Admitted:12   Male  :12   A:4   Min.   :  8.0  
+ Rejected:12   Female:12   B:4   1st Qu.: 80.0  
+                           C:4   Median :170.0  
+                           D:4   Mean   :188.6  
+                           E:4   3rd Qu.:302.5  
+                           F:4   Max.   :512.0  
+
+xt <- xtabs(Freq ~ Gender + Admit, data = DF)
+
+xt
+        Admit
+Gender   Admitted Rejected
+  Male       1198     1493
+  Female      557     1278
+```"

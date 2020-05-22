@@ -1,0 +1,14 @@
+"0","```r
+table(restData$zipCode %in% c(\"21212\"))#all zips that are == 21212
+#can also use '=='. Here we say are there any values on the left that fall into the value on the right?
+FALSE  TRUE 
+ 1299    28 
+ 
+table(restData$zipCode %in% c(\"21212\", \"21213\"))#21212 OR 21213
+FALSE  TRUE 
+ 1268    59 
+ 
+restData[restData$zipCode %in% c(\"21212\", \"21213\"), ]
+#subset a data set with this logical variable
+#it will only take the 'TRUE' rows from the set.
+```"

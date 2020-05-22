@@ -1,0 +1,17 @@
+"0","```r
+X[order(X$var1), ]
+  var1 var2 var3
+4    1   10   11
+1    2   NA   15
+2    3   NA   12
+5    4    9   13
+3    5    6   14
+
+X[order(X$var1, X$var3), ]
+  var1 var2 var3
+4    1   10   11
+1    2   NA   15
+2    3   NA   12
+5    4    9   13
+3    5    6   14
+```"

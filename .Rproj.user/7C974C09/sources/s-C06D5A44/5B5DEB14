@@ -1,0 +1,28 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1589569423755.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "5B5DEB14",
+    "lastKnownWriteTime" : 1589688457,
+    "last_content_update" : 1589688457700,
+    "path" : "~/Data Science/JHU/3. Getting and Cleaning Data/Notes/dplyr() Functions.Rmd",
+    "project_path" : "Notes/dplyr() Functions.Rmd",
+    "properties" : {
+        "cursorPosition" : "114,23",
+        "docOutlineVisible" : "0",
+        "marks" : "<:95,16\n>:95,16",
+        "scrollLine" : "91",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,747 @@
+---
+title: "Week 1"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+### Course Overview
+
+This course covers the basic ideas behind getting data ready for analysis.
+
+- Finding and extracting raw data
+- Tidy data principles and how to make data tiny
+- Practical implementation through a range of R packages
+
+Types of data:
+
+- fast cue: bioinformatics
+  - must parse this raw text file to extract relevant data
+- JSON: from twitter API
+- Free text instructions: convert to useable data
+
+Where is data?:
+
+- MySQL, MongoDB
+- `GET` request from an API
+- Open data site from baltimore
+
+Data Acquisition Pipeline
+
+Raw data -> Processing script -> tidy data -> data analysis -> data communication
+
+### Data
+
+> Data are values of **qualitative** or **quantitative** variables, belonging to a **set of items**.
+
+Set of items: sometimes called the population; the set of objects you are interested in
+
+Qualitative: Country of origin, sex, treatment
+
+Quantitative: Height, weight, blood pressure
+
+#### Raw Data:
+
+- The original source of the data
+- Often hard to use for data analyses
+- Data analysis includes processing
+- Raw data may only need to be processed once
+
+#### Processed Data:
+
+- Data that is ready for analyis
+- Processing can include merging, subsetting, transforming, etc.
+- There may be standards for processing
+- All steps should be recorded
+
+#### Pipeline Example:
+
+- Illumina genome sequencing instrument
+- Fragments of DNA bound to a slide (~500 letters out of 3 billion)
+- Multiple copies of that same sequence are made
+- Sequencing by Synthesis
+  - The complementary base/letter to each sequence on the slide is attached one letter at a time
+  - A, C, T and G all get a different colour
+  - This results in each cluster getting a new colour from each new nucleotide that is synthesized
+  - Zooming into a dot corresponds to the sequence of one of the clusters
+  - For each image there will be a colour that overpowers and corresponds to the sequence of the fragment
+  - This can be determined with a histogram
+  - Then you build a fast cue file with this data
+- Remember these prior steps that may have led to the data you are working with
+
+### Tidy Data
+
+Four things you should have
+
+1. The raw data
+2. A tidy data set
+3. A code book describing each variable and its values in the tidy data set
+4. An explicit and exact recipe you used to go from 1 -> 2,3
+
+You know the raw data is in the right format if you
+
+1. Ran no software on the data
+2. Did not manipulate any of the numbers in the data
+3. You did not remove any data from the data set
+4. You did not summarize the data in any way
+
+Tidy Data:
+
+1. Each variable you measure should be in one column
+2. Each different observation of that variable should be in a different row
+3. There should be one table for each "kind" of variable
+4. If you have multiple tables, they should include a column in the table that allows them to be linked.
+
+Some other important tips:
+
+- Include a row at the top of each file with variable names
+- Make variable names human readable AgeAtDiagnosis instead of AgeDx
+- In general data should be saved in one file per table
+
+#### The Code Book
+
+1. Information about the variables (including units!) in the data set not contained in the tidy data
+2. Information about the summary choices you made
+3. Information about the experimentaly study design you used
+
+Some other important tips:
+
+- A common format for this document is a Word/text file
+- There should be a section called "Study design" that has a thorough description of how you collected the data
+- There must be a section called "Code Book" that describes each variable and its units
+
+#### The Instruction List
+
+- Ideally a computer script (in R, python, etc.)
+- The input for the script is the raw data
+- The output is the processed, tidy data
+- There are no parameters to the script
+
+In some cases it will not be possible to script every step. In that case you should provide instructions like:
+
+1. Step 1 - take the raw file, run version 3.1.2 of summarize software with parameters a=1, b=2, c=3
+2. Step 2 - run the software separately for each sample
+3. Step 3 - take column three of outputfile.out for each sample and that is the corresponding row in the output data set
+
+Example: Why the instruction list is important:
+
+- Reinhart and Rogoff wrote a paper but performed the analysis incorrectly
+- A graduate student wrote a paper detailing their errors with the way they processed the data with the excel file they used
+
+### Downloading Files
+
+Get/set your working directory
+
+- A basic component of working with data is knowing your working directory
+- The two main commands are `getwd()` and `setwd()`
+- Be aware of relative vs absolute paths
+  - **Relative** - `setwd("./data"), setwd("../")`
+  - **Absolute** - `setwd("/Users/jtleek/data/")`
+- Important difference in Windows `setwd("C:\\Users\\Andrew\\Downloads")`
+
+Checking for and creating directories
+
+- `file.exists("directoryName")` checks to see if the directory exists
+- `dir.create("directoryName")` creates a directory if it doesn't exist
+- Here is an example checking for a "data" directory and creating it if it doesn't exist
+
+```{r}
+if (!file.exists("data")) {
+        dir.create("data")
+}
+#This creates a directory if it doesn't exist
+```
+
+Getting data from the internet - download.file()
+
+- Downloads a file from the internet
+- Even if you could do this by hand, helps with reproducibility
+- Important parmeters are `url`, `destfile`, `method`
+- Useful for downloading tab-delimited, csv, and other files
+
+```{r}
+fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
+download.file(fileUrl, destfile = "./data/cameras.csv", method = "curl")
+list.files("./data")
+
+[1] "cameras.csv"
+
+dateDownloaded <- date()
+
+dateDownloaded
+[1] "Sun Jan 12 21:37:44 2014"
+```
+
+- If the url starts with 'http' you can use download.file()
+- If the url starts with 'https' on Windows you may be ok
+- If the url starts with 'https' on Mac you may need to set method="curl"
+- If the file is big, this might take a while
+- Be sure to record when you downloaded
+
+### Reading local flat files
+
+```{r}
+if (!file.exists("data")) {
+        dir.create("data")
+}
+fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
+download.file(fileUrl, destfile = "cameras.csv", method = "curl")
+dateDownloaded <- date()
+```
+
+#### read.table()
+
+- This is the main function for reading data into R
+- Flexible and robust but requires more parameters
+- Reads the data into RAM - big data can cause problems
+- Important parameters `file`, `header`, `sep`, `row.names`, `nrows`
+- Related: read.csv(), read.csv2()
+
+```{r}
+cameraData <- read.table("./data/cameras.csv")
+Error: line 1 did not have 13 elements
+
+head(cameraData)
+Error: object 'cameraData' not found
+```
+
+```{r}
+cameraData <- read.table("./data/cameras.csv", sep = ",", header = TRUE)
+head(cameraData)
+
+cameraData <- read.csv("./data/cameras.csv") #sets sep="," and header=TRUE
+head(cameraData)
+```
+
+- `quote` - you can tell R whether there are any quoted values quote="" means no quotes
+- `na.strings` - set the character that represents a missing value
+- `nrows` - how many rows to read of the file (e.g. nrows=10 reads 10 lines)
+- `skip` - number of lines to skip before starting to read
+
+"In my experience, the biggest trouble with reading flat files are quotation marks ' or " placed in data values, setting quote="" often resolves these."
+
+#### Reading Excel Files
+
+```{r}
+if(!file.exists("data")){dir.create("data")}
+fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.xlsx?accessType=DOWNLOAD"
+download.file(fileUrl, destfile = "cameras.xlsx", method = "curl")
+dateDownloaded <- date()
+```
+
+read.xlsx(), read.xlsx2(){xlsx package}
+
+```{r}
+library(xlsx)
+cameraData <- read.xlsx("./data/cameras.xlsx",sheetIndex=1,header=TRUE)
+head(cameraData)
+```
+
+```{r}
+colIndex <- 2:3
+rowIndex <- 1:4
+
+cameraDataSubset <- read.xlsx("./data/cameras.xlsx",sheetIndex=1,colIndex=colIndex,rowIndex=rowIndex)
+
+cameraDataSubset
+```
+
+- The `write.xlsx` function will write out an Excel file with similar arguments
+- `read.xlsx2` is much faster than `read.xlsx` but for reading subsets of rows that may be slightly unstable
+- The `XLConnect` package has more options for writing and manipulating Excel files
+- The `XLConnect vignette` is a good place to start for that package
+- In general it is advised to store your data in either a database or in comma separated files (.csv) or tab separated files(.tab/.txt) as they are easier to distribute.
+
+### Reading XML
+
+- Extensible markup language
+- Frequently used to store structured data
+- Particularly widely used in internet applications
+- Extracting XML is the basis for most web scraping
+- Components
+  - Markup - labels that give the text structure
+  - Content - the actual text of the document
+  
+#### Tabs, elemnts and attributes
+
+- Tags correspond to general labels
+  - Start tags <section>
+  - End tags </section>
+  - Empty tags <line-break />
+- Elements are specific examples of tags
+  - <Greeting> Hello, world </Greeting>
+- Attributes are components of the label
+  - `<img src="jeff.jpg" alt="instructor"/>`
+  - `<step number="3"> Connect A to B. </step>`
+  
+#### Read the file into R
+
+```{r}
+library(XML)
+fileUrl <- "http://www.w3schools.com/xml/simple.xml"
+doc <- xmlTreeParse(fileUrl,useInternal=TRUE)
+rootNode <- xmlRoot(doc)
+
+xmlName(rootNode)
+[1] "breakfast_menu"
+
+names(rootNode)
+  food   food   food   food   food
+"food" "food" "food" "food" "food"
+```
+
+```{xml}
+rootNode[[1]]#double bracket to access elements, same as lists
+<food>
+  <name>Belgian Waffles</name>
+  <price>$5.95</price>
+  <description>Two of our famous Belgian Waffles with plenty of real maple syrup</description>
+  <calories>650</calories>
+</food>
+  
+rootNode[[1]][[1]]#Subsetting, the same as you do with lists
+<name>Belgian Waffles</name>
+```  
+  
+#### Programatically extract parts of the file
+
+```{r}
+xmlSApply(rootNode, xmlValue)#(xml_object, FUN_to_apply)
+#Loops through all of the elements of the root node and gets the xmlValue. By default this is recursive, this will get every single element of the document
+                                                                                                                    food 
+                              "Belgian Waffles$5.95Two of our famous Belgian Waffles with plenty of real maple syrup650" 
+                                                                                                                    food 
+                   "Strawberry Belgian Waffles$7.95Light Belgian waffles covered with strawberries and whipped cream900" 
+                                                                                                                    food 
+"Berry-Berry Belgian Waffles$8.95Light Belgian waffles covered with an assortment of fresh berries and whipped cream900" 
+                                                                                                                    food 
+                                               "French Toast$4.50Thick slices made from our homemade sourdough bread600" 
+                                                                                                                    food 
+                        "Homestyle Breakfast$6.95Two eggs, bacon or sausage, toast, and our ever-popular hash browns950" 
+```
+
+#### XPath
+
+- `/node` Top level node
+- `//node` Node at any level
+- `node[2attr-name]` Node with an attribute name
+- `node[@attr-name='bob']` Node with attribute name attr-name='bob'
+
+[In Depth Lecture Notes](http://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf) 
+
+```{r}
+xpathSApply(rootNode,"//name", xmlValue)
+#get all the nodes that correspond to an element with the title "name" and it will get the xmlValue of those nodes 
+[1] "Belgian Waffles"             "Strawberry Belgian Waffles" 
+[3] "Berry-Berry Belgian Waffles" "French Toast"               
+[5] "Homestyle Breakfast"      
+
+xpathSApply(rootNode,"//price",xmlValue)
+[1] "$5.95" "$7.95" "$8.95" "$4.50" "$6.95"
+```
+
+```{r}
+fileUrl <- "http://espn.go.com/nfl/team/_/name/bal/baltimore_ravens"
+doc <- htmlTreeParse(fileUrl,useInternal=TRUE)# doesn't work
+library("httr")
+doc <- htmlTreeParse(rawToChar(GET(fileUrl)$content),useInternal=TRUE)
+scores <- xpathSApply(doc,"//li[@class='score']",xmlValue)
+teams <- xpathSApply(doc,"//li[@class='team-name']",xmlValue)
+#looks for a list-item with that class label
+
+Not working?
+```
+
+### Reading JSON
+
+- Javascript Object Notation
+- Lightweight for data storage
+- Common format for data from application programming interfaces (APIs)
+- Similar structure to XML but different syntax/format
+- Data stored as
+  - Numbers (double)
+  - Strings (double quoted)
+  - Boolean (true or false)
+  - Array (ordered, comma separated enclosed in square brackets [])
+  - Object (unordered, comma separated collection of key:value pairs in curley brackets{})
+- library(jsonlite)
+  
+[jtleek api](https://api.github.com/users/jtleek/repos)
+
+```{r}
+library(jsonlite)
+jsonData <- fromJSON("https://api.github.com/users/jtleek/repos")
+
+names(jsonData)
+ [1] "id"                "node_id"           "name"             
+ [4] "full_name"         "private"           "owner"            
+ [7] "html_url"          "description"       "fork"             
+[10] "url"               "forks_url"         "keys_url"         
+[13] "collaborators_url" "teams_url"         "hooks_url"        
+[16] "issue_events_url"  "events_url"        "assignees_url"    
+[19] "branches_url"      "tags_url"          "blobs_url"        
+[22] "git_tags_url"      "git_refs_url"      "trees_url"        
+[25] "statuses_url"      "languages_url"     "stargazers_url"   
+[28] "contributors_url"  "subscribers_url"   "subscription_url" 
+[31] "commits_url"       "git_commits_url"   "comments_url"     
+[34] "issue_comment_url" "contents_url"      "compare_url"      
+[37] "merges_url"        "archive_url"       "downloads_url"    
+[40] "issues_url"        "pulls_url"         "milestones_url"   
+[43] "notifications_url" "labels_url"        "releases_url"     
+[46] "deployments_url"   "created_at"        "updated_at"       
+[49] "pushed_at"         "git_url"           "ssh_url"          
+[52] "clone_url"         "svn_url"           "homepage"         
+[55] "size"              "stargazers_count"  "watchers_count"   
+[58] "language"          "has_issues"        "has_projects"     
+[61] "has_downloads"     "has_wiki"          "has_pages"        
+[64] "forks_count"       "mirror_url"        "archived"         
+[67] "disabled"          "open_issues_count" "license"          
+[70] "forks"             "open_issues"       "watchers"         
+[73] "default_branch"  
+
+names(jsonData$owner)
+ [1] "login"               "id"                  "node_id"       
+ [4] "avatar_url"          "gravatar_id"         "url"           
+ [7] "html_url"            "followers_url"       "following_url" 
+[10] "gists_url"           "starred_url"      "subscriptions_url" 
+[13] "organizations_url"   "repos_url"           "events_url"    
+[16] "received_events_url" "type"                "site_admin" 
+
+jsonData$owner$login
+
+ [1] "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek"
+ [8] "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek"
+[15] "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek"
+[22] "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek"
+[29] "jtleek" "jtleek"
+```
+
+Writing data frames to JSON
+```{r}
+myjson <- toJSON(iris, pretty=TRUE)#pretty gives nice indentations
+
+cat(myjson)
+...
+  {
+    "Sepal.Length": 6.2,
+    "Sepal.Width": 3.4,
+    "Petal.Length": 5.4,
+    "Petal.Width": 2.3,
+    "Species": "virginica"
+  },
+  {
+    "Sepal.Length": 5.9,
+    "Sepal.Width": 3,
+    "Petal.Length": 5.1,
+    "Petal.Width": 1.8,
+    "Species": "virginica"
+  }
+]
+```
+
+Convert back to data frame
+```{r}
+iris2 <- fromJSON(myjson)
+
+head(iris2)
+  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2  setosa
+3          4.7         3.2          1.3         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa
+6          5.4         3.9          1.7         0.4  setosa
+```
+
+Further Resources
+
+[json.org](http://www.json.org/)
+[Tutorial on jsonlite](http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoder-decoder/)
+jsonlite vignette
+
+### Using data.table
+
+- Inherits from data.frame
+  - All functions that accept data.frame work on data.table
+- Written in C so it is much faster
+- Much, mmuch faster at subsetting, group, and updating
+
+#### Create data tables just like data frames
+
+```{r}
+library(data.table)
+DF = data.frame(x=rnorm(9),y=rep(c("a","b","c"),each=3),z=rnorm(9))
+
+head(DF,3)
+           x y           z
+1 -0.5915689 a -1.38117056
+2  1.5527466 a -0.59750530
+3  1.2476233 a  0.06526704
+```
+
+```{r}
+DT = data.table(x=rnorm(9),y=rep(c("a","b","c"),each=3),z=rnorm(9))
+head(DT,3)
+            x y           z
+1:  0.2530629 a  0.70368654
+2: -1.2137640 a -0.02403499
+3:  0.4091166 a -0.35275464
+```
+
+#### tables()
+
+See all the data tables in memory (tables() is diff. from table())
+
+```{r}
+tables()
+   NAME NROW NCOL MB  COLS KEY
+1:   DT    9    3  0 x,y,z    
+Total: 0MB
+```
+
+#### Subsetting rows
+
+```{r}
+DT[2,]
+           x y           z
+1: -1.213764 a -0.02403499
+
+DT[DT$y=="a",] #look at data only where y == "a"
+            x y           z
+1:  0.2530629 a  0.70368654
+2: -1.2137640 a -0.02403499
+3:  0.4091166 a -0.35275464
+```
+
+```{r}
+DT[c(2,3)]
+            x y           z
+1: -1.2137640 a -0.02403499
+2:  0.4091166 a -0.35275464
+```
+
+#### Column subsetting in data.table
+
+- The subsetting function is modified for data.table
+- The argument you pass after the comma is called an "expression"
+- In R an expression is a collection of statements enclosed in curley brackets
+
+```{r}
+{
+  x = 1
+  y = 2
+}
+
+k = {print(10); 5}
+[1] 10
+
+print(k)
+[1] 5
+```
+
+#### Calculating values for variables with expressions
+
+```{r}
+DT[,list(mean(x),sum(z))]
+           V1       V2
+1: -0.2347373 2.222656
+
+DT[,table(y)]
+y
+a b c 
+3 3 3 
+```
+
+#### Adding new columns
+
+```{r}
+DT[,w:=z^2]
+```
+
+- Adds a new column that is == z^2
+- data.frame will copy over that entire data frame and add the new variable
+  - Makes memory storage an issue with big data sets.
+  - This is not a problem here since data.table doesn't do this
+  
+```{r}
+DT2 <- DT
+DT[, y:= 2]
+```
+
+This may cause problems because a copy hasn't been made, so both DT and DT2 have been modified with y:=2
+
+- You must use the copy function to make an explicit copy
+
+#### Multiple Operations
+
+```{r}
+DT[,m:= {tmp <- (x+z); log2(tmp+5)}]
+            x y           z            w        m
+1:  0.2530629 a  0.70368654 0.4951747515 2.574525
+2: -1.2137640 a -0.02403499 0.0005776806 1.911577
+3:  0.4091166 a -0.35275464 0.1244358353 2.338100
+4:  0.7528041 b -1.08462697 1.1764156621 2.222859
+5: -2.3604428 b  2.36212772 5.5796473449 2.322414
+6:  1.7262276 b -0.37734555 0.1423896656 2.666503
+7: -0.7964213 c  1.21673811 1.4804516236 2.438377
+8:  1.6661918 c -0.17187347 0.0295404909 2.699178
+9: -2.5494106 c -0.04926052 0.0024265991 1.263833
+```
+
+- `{}` denotes expression
+- `;` separates statements
+- Operate the first statement, then the second
+- The value that gets returned is the evaluation of the last statement
+1. `tmp <- (x+z)` - assign to the temporary variable `x+z`
+2. `log2(tmp+5)` - take the log(base2) of (tmp+5)
+
+These multistep operations are handelled very easily with data.table()
+
+#### plyr like operations
+
+```{r}
+DT[,a:=x>0]
+            x y           z            w        m     a
+1:  0.2530629 a  0.70368654 0.4951747515 2.574525  TRUE
+2: -1.2137640 a -0.02403499 0.0005776806 1.911577 FALSE
+3:  0.4091166 a -0.35275464 0.1244358353 2.338100  TRUE
+4:  0.7528041 b -1.08462697 1.1764156621 2.222859  TRUE
+5: -2.3604428 b  2.36212772 5.5796473449 2.322414 FALSE
+6:  1.7262276 b -0.37734555 0.1423896656 2.666503  TRUE
+7: -0.7964213 c  1.21673811 1.4804516236 2.438377 FALSE
+8:  1.6661918 c -0.17187347 0.0295404909 2.699178  TRUE
+9: -2.5494106 c -0.04926052 0.0024265991 1.263833 FALSE
+```
+
+- Add a column 'a' that is ==TRUE when x>0
+
+```{r}
+DT[,b:= mean(x+w),by=a]#mean of x+w grouped by variable 'a'
+            x y           z            w        m     a          b
+1:  0.2530629 a  0.70368654 0.4951747515 2.574525  TRUE 1.35507188
+2: -1.2137640 a -0.02403499 0.0005776806 1.911577 FALSE 0.03576617
+3:  0.4091166 a -0.35275464 0.1244358353 2.338100  TRUE 1.35507188
+4:  0.7528041 b -1.08462697 1.1764156621 2.222859  TRUE 1.35507188
+5: -2.3604428 b  2.36212772 5.5796473449 2.322414 FALSE 0.03576617
+6:  1.7262276 b -0.37734555 0.1423896656 2.666503  TRUE 1.35507188
+7: -0.7964213 c  1.21673811 1.4804516236 2.438377 FALSE 0.03576617
+8:  1.6661918 c -0.17187347 0.0295404909 2.699178  TRUE 1.35507188
+9: -2.5494106 c -0.04926052 0.0024265991 1.263833 FALSE 0.03576617
+```
+
+- Take the mean of all x+w when a == TRUE, then display that mean for every spot that a == TRUE
+- Do the same for a == FALSE
+
+#### Special Variables
+
+`.N` An integer, length 1, containing the number of times a particular group appears
+
+```{r}
+set.seed(123);
+DT <- data.table(x=sample(letters[1:3], 1E5, TRUE))
+
+DT[, .N, by=x]
+   x     N
+1: a 33387
+2: c 33201
+3: b 33412
+```
+
+- ~100,000 a's, b's, and c's
+- Count the number of times those letters appear
+- "count the number of times, group this by the 'x' variable"
+- Very fast compared to the alternative:
+  - table(DT$x)
+  
+#### Keys
+
+```{r}
+DT <- data.table(x=rep(c("a","b","c"),each=100), y=rnorm(300))
+setkey(DT, x)
+
+DT['a']
+     x           y
+  1: a  0.25958973
+  2: a  0.91751072
+  3: a -0.72231834
+  4: a -0.80828402
+  5: a -0.14135202
+  6: a  2.25701345
+  7: a -2.37955015
+  8: a -0.45425393
+  9: a -0.06007418
+ 10: a  0.86090061
+ 11: a -1.78466393
+ 12: a -0.13074225
+ ...
+```
+
+- If you set a key, it's possible to subset and sort a data table much more rapidly than you would be able to do with a data frame
+- This data table has a variable `x` and a variable `y`
+- The key to the data table is set to `x`
+- `DT['a']` - automatically knows to look in the key for 'a'
+
+#### Joins
+
+- Keys can also be used to facilitate joins between data tables
+- This process can be very fast
+
+```{r}
+DT1 <- data.table(x=c('a', 'a', 'b', 'dt1'), y=1:4)
+DT2 <- data.table(x=c('a', 'b', 'dt2'), z=5:7)
+setkey(DT1, x); setkey(DT2, x)
+
+DT1
+     x y
+1:   a 1
+2:   a 2
+3:   b 3
+4: dt1 4
+
+DT2
+     x z
+1:   a 5
+2:   b 6
+3: dt2 7
+
+merge(DT1, DT2)
+   x y z
+1: a 1 5
+2: a 2 5
+3: b 3 6
+```
+
+#### Fast Reading
+
+```{r}
+big_df <- data.frame(x=rnorm(1E6), y=rnorm(1E6))
+file <- tempfile()
+write.table(big_df, file=file, row.names=FALSE, col.names=TRUE, sep="\t", quote=FALSE)
+
+system.time(fread(file))
+ user  system elapsed 
+   0.11    0.03    0.11
+   
+system.time(read.table(file, header=TRUE, sep="\t"))
+   user  system elapsed 
+   5.77    0.25    6.25 
+```
+
+- `big_df` is a big data frame
+- create a tempfile
+- `write.table()` writes that big dat aframe to the file
+- use `fread()` to read the file
+- It's actually much faster to read files with data.table as well
+
+#### Summary
+
+- `data.table()` can be both faster and more memory efficient than `data.frame()`
+- It does require you to learn a little more syntax
+- Need to be more careful copying over tables
+- The [latest development](https://r-forge.r-project.org/scm/viewvc.php/pkg/NEWS?view=markup&root=datatable) version contains new functions like `melt` and `dcast` for data.tables
+- Here is a [list of the differences](Http://stackoverflow.com/questions/13618488/what-you-can-do-with-data-frame-that-you-cant-in-data-table) between data.table and data.frame
+- [Notes](https://github.com/raphg/Biostat-578/blob/master/Advanced_data_manipulation.Rpres) based on Raphael Gottardo's notes, who got them from Kevin Ushey

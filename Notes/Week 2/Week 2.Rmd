@@ -1,0 +1,519 @@
+---
+title: "Week 2"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+### MySQL
+
+- Free and widely used open source database software
+- Widely used in internet based applications
+- Data are structured in:
+  - Databases
+  - Tables(datasets) within Databases
+  - Fields(columns) within tables
+- Each row is called a record
+
+Windows install:
+
+[Official](http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL)
+
+[Useful Guide](http://www.ahschulz.de/2013/07/23/installing-rmysql-under-windows/)
+
+#### Connecting and listing databases
+
+Example:
+
+[UCSC Genome Bioinformatics](http://genome.ucsc.edu/)
+
+[UCSC MySQL Server](http://genome.ucsc.edu/goldenPath/help/mysql.html)
+
+```{r}
+ucscDb <- dbConnect(MySQL(), user = "genome", host = "genome-mysql.cse.ucsc.edu")
+
+result <- dbGetQuery(ucscDb, "show databases;"); dbDisconnect(ucscDb);
+[1] TRUE
+
+result
+              Database
+1              acaChl1
+2              ailMel1
+3              allMis1
+4              allSin1
+5              amaVit1
+6              anaPla1
+7              ancCey1
+8              angJap1
+9              anoCar1
+10             anoCar2
+...
+```
+
+- `dbConnect()` - connect to a database
+  - `MySQL()` - database type
+  - `user` and `host` - The user and where the MySQL server is
+  - Opens a connection, and gives the connection the handle `ucscDb`
+- Now we can apply a query to that database
+- `dbGetQuery()` - Goes to connection and runs the 'MySQL' command: "show databases;"
+- `dbDisconnect()` - Always disconnect from that server when finished
+  - Returns `TRUE` when you successfully disconnect
+  
+#### Connecting to hg19 and listing tables
+
+```{r}
+hg19 <- dbConnect(MySQL(), user = "genome", db = "hg19", host = "genome-mysql.cse.ucsc.edu")
+allTables <- dbListTables(hg19)
+
+length(allTables)
+[1] 12444
+
+allTables[1:5]
+[1] "HInv"         "HInvGeneMrna" "acembly"     
+[4] "acemblyClass" "acemblyPep"  
+```
+
+- `db` - Speficies the database within the server
+- `dbListTables()` - List all the tables in the database (usually many per database)
+  - Each table corresponds to a different kind of data set
+- MySQL can store a large amount of data that we have easy access to
+
+#### Get dimensions of a specific table
+
+```{r}
+dbListFields(hg19, "affyU133Plus2")
+ [1] "bin"         "matches"     "misMatches"  "repMatches" 
+ [5] "nCount"      "qNumInsert"  "qBaseInsert" "tNumInsert" 
+ [9] "tBaseInsert" "strand"      "qName"       "qSize"      
+[13] "qStart"      "qEnd"        "tName"       "tSize"      
+[17] "tStart"      "tEnd"        "blockCount"  "blockSizes" 
+[21] "qStarts"     "tStarts"    
+
+dbGetQuery(hg19, "select count(*) from affyU133Plus2")
+  count(*)
+1    58463
+```
+
+- `dbListFields()` - In this database hg19, show all the fields in the table "affyU133Plus2"
+- Table: data frame, Fields: column names
+- `dbGetQuery()` - pass the MySQL command 'select count(*) from affyU133Plus2' to the database hg19
+  - This commands counts the number of records in a table (rows)
+  - `*` means all
+
+#### Read from the table
+
+```{r}
+affyData <- dbReadTable(hg19, "affyU133Plus2")
+
+head(affyData)
+  bin matches misMatches repMatches nCount qNumInsert qBaseInsert
+1 585     530          4          0     23          3          41
+2 585    3355         17          0    109          9          67
+3 585    4156         14          0     83         16          18
+4 585    4667          9          0     68         21          42
+5 585    5180         14          0    167         10          38
+6 585     468          5          0     14          0           0
+  tNumInsert tBaseInsert strand        qName qSize qStart qEnd tName
+1          3         898      -  225995_x_at   637      5  603  chr1
+2          9       11621      -  225035_x_at  3635      0 3548  chr1
+3          2          93      -  226340_x_at  4318      3 4274  chr1
+4          3        5743      - 1557034_s_at  4834     48 4834  chr1
+5          1          29      -    231811_at  5399      0 5399  chr1
+6          0           0      -    236841_at   487      0  487  chr1
+      tSize tStart  tEnd blockCount
+1 249250621  14361 15816          5
+2 249250621  14381 29483         17
+3 249250621  14399 18745         18
+4 249250621  14406 24893         23
+5 249250621  19688 25078         11
+6 249250621  27542 28029          1
+```
+
+- `dbReadTable()` - Pulls table from database
+  - give db and table name
+  - Can extract the database one table at a time
+
+#### Select a specific subset
+
+```{r}
+query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3")
+
+affyMis <- fetch(query); quantile(affyMis$misMatches)
+  0%  25%  50%  75% 100% 
+   1    1    2    2    3 
+  
+affyMisSmall <- fetch(query, n = 10); dbClearResult(query);
+[1] TRUE
+
+dim(affyMisSmall)
+[1] 10 22
+```
+
+- `dbSendQuery()` - 
+  - 'select * from affyU133Plus2 where misMatches between 1 and 3'
+    - `*`: all the different observations from `affyU133Plus2` table
+    - `misMatches`: a variable (column) from the dataset
+    - returns only the results where this column == 1 or 3
+  - The command is sent and stored remotely in the database
+- `fetch()`: will acquire the result from that remote command
+  - using `n = 10` only brings back the top 10 records
+- `dbClearResult()`: After fetching you must clear the query from the remote server
+  - Will return `TRUE` if successful
+- `dim()` shows that we did in fact get a small subset of the table
+
+You can put any query in the quotes and there are many options
+Most important queries:
+
+- total count
+  - 'select count(*) from (table)'
+- Select all observations subject to specific conditions
+  - 'select * from (table) where (field/column/variable) (condition)'
+  
+#### Don't forget to close the connection!
+
+```{r}
+dbDisconnect(hg19)
+[1] TRUE
+```
+
+Other Resources
+
+- [RMySQL vignette](http://cran.r-project.org/web/packages/RMySQL/RMySQL.pdf)
+- [List of commands](http://www.pantz.org/software/mysql/mysqlcommands.html)
+  - **Do not delete, add or join things from ensembl. Only select**
+  - In general be careful with mysql commands
+- [A nice blog post](http://www.r-bloggers.com/mysql-and-r/) summarizing some other commands
+
+### HDF5
+
+- Used for storing large data asets
+- Supports storing a range of data types
+- Heirarchical data format
+- *groups* containing zero or more data sets and metadata
+  - have a *group header* with group name and list of attributes
+  - have a *group symbol table* with a list of objects in group
+- *datasets* multidimensional array of data elements with metadata
+  - Have a *header* with name, datatype, dataspace, and storage layout
+  - have a *data array* with the data
+  
+[HDF Group](http://www.hdfgroup.org/)
+
+#### R HDF5 package
+
+```{r}
+source("http://bioconductor.org/biocLite.R")
+biocLite("rhdf5")
+
+install.packages(BiocManager)
+library(BiocManager)
+#BiocManager::install("biocLite")
+BiocManger::install("rhdf5")
+
+library(rhdf5)
+created = h5createFile("example.h5")
+
+created
+[1] TRUE
+```
+
+- This will install packages from [Bioconductor](http://bioconductor.org/), primarily used for genomics but also has good "big data" packages
+- Can be used to interface with hdf5 data sets
+- This lecture is modeled very closely on the rhdf5 tutorial that can be found [here](http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf)
+
+#### Create groups
+
+- After creating the file, you can create groups within the file
+
+```{r}
+created = h5createGroup("example.h5", "foo")
+created = h5createGroup("example.h5", "baa")
+created = h5createGroup("example.h5", "foo/foobaa")#subgroup of 'foo'
+
+h5ls("example.h5")#like the 'ls()' command, but only listing components of this hdf5 file
+  group   name     otype dclass dim
+0     /    baa H5I_GROUP           
+1     /    foo H5I_GROUP           
+2  /foo foobaa H5I_GROUP 
+```
+
+```{r}
+A = matrix(1:10, nr = 5, nc = 2)#creates a matrix
+h5write(A, "example.h5", "foo/A")#writes the matrix to group 'foo/A'
+B = array(seq(0.1, 2.0, by = 0.1), dim = c(5, 2, 2))#creates a multi dimensional array
+attr(B, "scale") <- "liter"#adds 'liter' attribute to 'B'
+h5write(B, "example.h5", "foo/foobaa/B")#writes the MDA to group 'foo/foobaa/B'
+
+h5ls("example.h5")
+        group   name       otype  dclass       dim
+0           /    baa   H5I_GROUP                  
+1           /    foo   H5I_GROUP                  
+2        /foo      A H5I_DATASET INTEGER     5 x 2
+3        /foo foobaa   H5I_GROUP                  
+4 /foo/foobaa      B H5I_DATASET   FLOAT 5 x 2 x 2
+```
+
+#### Write a data set
+
+```{r}
+df = data.frame(1L:5L, seq(0, 1, length.out = 5), c("ab", "cde", "fghi", "a", "s"), stringsAsFactors = FALSE)
+h5write(df, "example.h5", "df")#writes that df to the top level group (the root group)
+
+h5ls("example.h5")
+        group   name       otype   dclass       dim
+0           /    baa   H5I_GROUP                   
+1           /     df H5I_DATASET COMPOUND         5
+2           /    foo   H5I_GROUP                   
+3        /foo      A H5I_DATASET  INTEGER     5 x 2
+4        /foo foobaa   H5I_GROUP                   
+5 /foo/foobaa      B H5I_DATASET    FLOAT 5 x 2 x 2
+```
+
+#### Reading Data
+
+```{r}
+readA = h5read("example.h5", "foo/A")
+readB = h5read("example.h5", "foo/foobaa/B")
+readdf = h5read("example.h5", "df")
+
+readA
+     [,1] [,2]
+[1,]    1    6
+[2,]    2    7
+[3,]    3    8
+[4,]    4    9
+[5,]    5   10
+```
+
+#### Writing and Reading Chunks
+
+```{r}
+h5write(c(12, 13, 14), "example.h5", "foo/A", index = list(1:3, 1))#Write to 'foo/A' data set, the first 3 rows and first column 
+#'index' command can also be used to read specific indeces
+
+h5read("example.h5", "foo/A")
+     [,1] [,2]
+[1,]   12    6
+[2,]   13    7
+[3,]   14    8
+[4,]    4    9
+[5,]    5   10
+```
+
+#### Further Resources
+
+- hdf5 can be used to optimize reading/writing from disc in R
+- [The rhdf5 tutorial](http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf)
+- The HDF group has [information on HDF5 in general](http://www.hdfgroup.org/HDF5/)
+
+### Webscraping
+
+Programatically extracting data from the HTML code of websites.
+
+- It can be a great way to get data (See: How netflix reverse engineered hollywood)
+- Many websites have information you may want to programatically read
+- In some cases this is against the terms of service for the website
+- Attempting to read too many pages too quickly can get your IP address blocked
+
+#### readLines()
+
+```{r}
+con = url("http://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en")
+htmlCode = readLines(con)
+close(con)
+htmlCode
+```
+Super slow?
+
+- outputs one long line
+
+#### Parsing with XML
+
+```{r}
+library(XML)
+url <- "http://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en"
+html <- htmlTreeParse(url, useInternalNodes = T)
+
+xpathSApply(html, "//title", xmlValue)
+[1] "Jeff Leek - Google Scholar Citations"
+
+xpathSApply(html, "//td[@id='col-citedby']", xmlValue)
+#(doesn't work on this link)
+```
+
+#### GET from the httr package
+
+```{r}
+library(httr)
+library(XML)#for htmlParse
+html2 = GET(url)
+content2 = content(html2, as = "text")
+parsedHtml = htmlParse(content2, asText = TRUE)
+
+xpathSApply(parsedHtml, "//title", xmlValue)
+[1] "Jeff Leek - Google Scholar Citations"
+```
+
+**This one works straight from the web**
+
+#### Webpages with passwords
+
+```{r}
+pg1 = GET("http://httpbin.org/basic-auth/user/passwd")
+
+pg1
+Response [http://httpbin.org/basic-auth/user/passwd]
+  Date: 2020-05-13 00:28
+  Status: 401
+  Content-Type: <unknown>
+<EMPTY BODY>
+```
+
+```{r}
+pg2 = GET("http://httpbin.org/basic-auth/user/passwd", authenticate("user", "passwd"))
+
+pg2
+Response [http://httpbin.org/basic-auth/user/passwd]
+  Date: 2020-05-13 00:30
+  Status: 200
+  Content-Type: application/json
+  Size: 47 B
+{
+  "authenticated": true, 
+  "user": "user"
+}
+
+names(pg2)
+ [1] "url"         "status_code" "headers"     "all_headers"
+ [5] "cookies"     "content"     "date"        "times"      
+ [9] "request"     "handle"   
+```
+
+#### Using handles
+
+```{r}
+google = handle("http://google.com")
+pg1 = GET(handle = google, path = "/")
+pg2 = GET(handle = google, path = "search")
+```
+
+- Handles allow you to save the authentication across multiple accesses to a website
+- Authenticate the handle one time then use GET() on the handle for different paths, etc.
+
+#### Further Resources
+
+- R Bloggers has a number of [examples of web scraping](http://www.r-bloggers.com/?s=Web+Scraping)
+- The httr help file has [useful examples](http://cran.r-project.org/web/packages/httr/httr.pdf)
+
+### Application Programming Interfaces
+
+- Use `httr` package to get data from API's
+- Make an account with the API organization
+- Get information from the organization's application
+  - URL of application
+  - OAuth settings
+    - R/W settings?
+    - Consumer Key
+    - Consumer Secret
+    - Request token URL
+    - Authorize URL
+
+```{r}
+library(httr)
+myapp = oauth_app("twitter", 
+                  key = "yourConsumerKeyHere", 
+                  secret = "yourConsumerSecretHere")
+sig = sign_oauth1.0(myapp, token = "yourTokenHere", 
+                    token_secret = "yourTokenSecretHere")
+homemTL = GET("https://api.twitter.com/1.1/statuses/home_timeline.json", sig)
+```
+
+- `oauth_app()`: starts the authorization process
+  - App is named 'twitter' here, with key and secret
+- `sign_oauth1.0()`: sign the application with your token and token secret
+- `GET()`: give the URL and sig to get the data
+
+#### Converting the json object
+
+```{r}
+library("RJSONIO")
+json1 = content(homeTL)
+json2 = jsonlite::fromJSON(toJSON(json1))
+
+json2[1, 1:4]
+#output here
+```
+
+- `content()`: recognizes it's json data
+  - uses the `fromJSON()` function from 'RJSONIO' package
+  - Returns a structured 'R object'
+- `jsonlite::fromJSON()`: reformats the object to a data frame
+  - Must use `toJSON()` to convert it back into json first
+
+In this example each row corresponds to a tweet in his home timeline 
+
+#### Summary
+
+- httr allows `GET`, `POST`, `PUT`, `DELETE` if you are authorized
+- You can authenticate with a user name or password
+- Most modern APIs use something like oauth
+- httr works well with Facebook, Google, Twitter, Github, etc.
+
+### Other Packages
+
+- Roger has a nice video on how there are R packages for most things that you will want to access.
+- Here I'm going to briefly review a few useful packages
+- In general the best way to find out if the R package exists is to Google "data storage mechanism R package"
+  - For example: "MySQL R package"
+  
+#### Interacting more directly with files
+
+- file - open a connection to a text file
+- url - open a connection to an url
+- gzfile - open a connection to a .gz file
+- bzfile - open a connection to a .bz2 file
+- ?connections for more information
+
+**Must close connections**
+
+#### Foreign package
+
+- Loads of data from Minitab, S, SAS, SPSS, Stata, Systat
+- Basic functions read.foo
+  - read.arff (Weka)
+  - read.dta (Stata)
+  - read.mtp (Minitab)
+  - read.octave (Octave)
+  - read.spss (SPSS)
+  - read.xport (SAS)
+- See the help page for more details
+
+#### Other Databases
+
+- RPostresSQL: DBI-compliant database connection from R
+- RODBC provides interfaces to multiple databases including PostgreQL, MySQL, Microsoft Access and SQLite
+- RMongo and rmongodb
+
+#### Reading Images
+
+- jpeg
+- readbitmap
+- png
+- EBImage (Bioconductor)
+
+#### Reading GIS data
+
+- rdgal
+- rgeos
+- raster
+
+#### Reading Music Data
+
+- tuneR
+- seewave
+
+
+  

@@ -1,0 +1,7 @@
+"0","```r
+restData$nearMe <- restData$neighborhood %in% c(\"Roland Park\", \"Homeland\")
+#Find all the restaurants in the these two neighborhoods
+table(restData$nearMe)
+FALSE  TRUE 
+ 1314    13 
+```"

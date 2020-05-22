@@ -1,0 +1,19 @@
+"0","```r
+cylData <- dcast(carMelt, cyl ~ variable)
+#data given is count# of variables / factor
+#11 mpg data points for 4 cyl
+cylData
+  cyl mpg hp
+1   4  11 11
+2   6   7  7
+3   8  14 14
+
+cylData <- dcast(carMelt, cyl ~ variable, mean)
+#This gives the mean of those data points instead of the # of points
+#mean for each variable for each factor
+cylData
+  cyl      mpg        hp
+1   4 26.66364  82.63636
+2   6 19.74286 122.28571
+3   8 15.10000 209.21429
+```"

@@ -1,0 +1,67 @@
+---
+title: "Week 3 Summary"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+sort()
+order()
+
+plyr: arrange()
+
+cbind()
+rbind()
+
+head()
+tail()
+summary()
+str()
+quantile()
+table()
+
+is.na()
+sum()
+any()
+all()
+colSums()
+all(colSums())
+
+xtabs()
+ftable(xtabs())
+
+object.size()
+print(object.size(), units = )
+
+cut(data, breaks = quantile(data))
+cut2()
+
+factor()
+relevel()
+
+mutate()
+
+melt()
+dcast()
+
+ddply()
+summarise()
+group_by()
+mutate()
+
+select()
+filter()
+
+acast()
+arrange()
+
+merge()
+intersect()
+
+library(readr)
+library(tidyr)
+
+
+

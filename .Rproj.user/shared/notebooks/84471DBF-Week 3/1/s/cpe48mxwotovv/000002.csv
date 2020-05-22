@@ -1,0 +1,10 @@
+"0","```r
+sort(X$var1)
+[1] 1 2 3 4 5
+
+sort(X$var1, decreasing = TRUE)
+[1] 5 4 3 2 1
+
+sort(X$var2, na.last = TRUE)
+[1]  6  9 10 NA NA
+```"

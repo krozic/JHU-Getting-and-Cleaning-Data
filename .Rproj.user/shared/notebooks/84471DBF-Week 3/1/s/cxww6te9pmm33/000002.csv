@@ -1,0 +1,29 @@
+"0","```r
+head(restData, n = 3)
+   name zipCode neighborhood councilDistrict policeDistrict
+1   410   21206    Frankford               2   NORTHEASTERN
+2  1919   21231  Fells Point               1   SOUTHEASTERN
+3 SAUTE   21224       Canton               1   SOUTHEASTERN
+                       Location.1 X2010.Census.Neighborhoods
+1 4509 BELAIR ROAD\nBaltimore, MD                         NA
+2    1919 FLEET ST\nBaltimore, MD                         NA
+3   2844 HUDSON ST\nBaltimore, MD                         NA
+  X2010.Census.Wards.Precincts Zip.Codes
+1                           NA        NA
+2                           NA        NA
+3                           NA        NA
+
+tail(restData, n = 3)
+             name zipCode  neighborhood councilDistrict policeDistrict
+1325 ZINK'S CAFÃ‚\u0090   21213 Belair-Edison              13   NORTHEASTERN
+1326 ZISSIMOS BAR   21211       Hampden               7       NORTHERN
+1327       ZORBAS   21224     Greektown               2   SOUTHEASTERN
+                           Location.1 X2010.Census.Neighborhoods
+1325 3300 LAWNVIEW AVE\nBaltimore, MD                         NA
+1326      1023 36TH ST\nBaltimore, MD                         NA
+1327  4710 EASTERN Ave\nBaltimore, MD                         NA
+     X2010.Census.Wards.Precincts Zip.Codes
+1325                           NA        NA
+1326                           NA        NA
+1327                           NA        NA
+```"

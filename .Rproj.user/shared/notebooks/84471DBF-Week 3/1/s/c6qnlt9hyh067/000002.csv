@@ -1,0 +1,27 @@
+"0","```r
+summary(restData)
+     name              zipCode       neighborhood      
+ Length:1327        Min.   :-21226   Length:1327       
+ Class :character   1st Qu.: 21202   Class :character  
+ Mode  :character   Median : 21218   Mode  :character  
+                    Mean   : 21185                     
+                    3rd Qu.: 21226                     
+                    Max.   : 21287                     
+ councilDistrict  policeDistrict      Location.1       
+ Min.   : 1.000   Length:1327        Length:1327       
+ 1st Qu.: 2.000   Class :character   Class :character  
+ Median : 9.000   Mode  :character   Mode  :character  
+ Mean   : 7.191                                        
+ 3rd Qu.:11.000                                        
+ Max.   :14.000                                        
+ X2010.Census.Neighborhoods X2010.Census.Wards.Precincts
+ Mode:logical               Mode:logical                
+ NA's:1327                  NA's:1327                   
+                                                        
+                                                        
+                                                        
+                                                        
+ Zip.Codes     
+ Mode:logical  
+ NA's:1327     
+```"
