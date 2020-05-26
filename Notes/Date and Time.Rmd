@@ -1,0 +1,22 @@
+---
+title: "Date and Time"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+today()
+
+- year(x), month(x), or day(x)
+- wday(x, label = )
+
+now()
+
+- hour(), minute(), and second()
+- ymd(), dmy(), hms(), ymd_hms()
+
+update(this_moment, hours = 8, minutes = 34, seconds = 55)
+
+

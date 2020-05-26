@@ -1,0 +1,46 @@
+---
+title: "Quiz 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+Q1.
+> strsplit(names(idahoHousing), "wgtp")
+
+Q2.
+Clean the data:
+> gdp <- read.csv("./data/GDP.csv", skip = 4)
+> gdp <- cbind(gdp[1:190, 1:2], gdp[1:190, 4:5])
+> colnames(gdp) <- c("CountryCode", "rank", "name", "gdp")
+
+Remove the commas:
+#subcoms <- function(x){gsub(",", "", gdp$gdp)}
+#sapply(gdp$gdp, subcoms)
+
+> mean(as.numeric(gsub(",", "", gdp$gdp)))
+
+Q3.
+> grep("^United", gdp$name)
+
+Q4.
+> gdpedu <- merge(gdp, edu, by = "CountryCode")
+
+> length(grep("Fiscal year end: June", gdpedu$Special.Notes))
+
+Q5.
+Given:
+> library(quantmod)
+> amzn = getSymbols("AMZN",auto.assign=FALSE)
+> sampleTimes = index(amzn)
+
+> amznyears <- year(sampleTimes)
+> length(grep("2012", amznyears))
+
+#amznday <- wday(sampleTimes, label = TRUE)
+#length(grep("Mon", amznday))
+
+> amzn2012 <- grep("2012", amznyears)
+> length(grep("Mon", amznday[amzn2012]))

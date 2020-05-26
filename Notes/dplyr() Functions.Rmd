@@ -1,5 +1,5 @@
 ---
-title: "dplyr Functions"
+title: "dplyr and tidyr Functions"
 output: html_document
 ---
 
@@ -113,3 +113,109 @@ cran %>%
   mutate(size_mb = size / 2^20) %>%
   filter(size_mb <= 0.5) %>%
   arrange(desc(size_mb))
+```
+
+#### gather()
+
+Problem:
+
+One variable (typically 'count') is stored across multiple columns
+
+- Gather multiple columns into a single key:value pair of columns
+        - Ex. 'male' and 'female' column showing 'counts'
+        - 'counts' is a variable spread across 2 columns
+        - This can be condensed into 'sex' and 'counts'
+
+```{r}
+gather(students, sex, count, -grade)
+#could also use 'column1:column5' instead of '-grade'
+```
+
+#### separate()
+
+Problem:
+
+Multiple variables stored in a single column
+
+- Separates a single column into multiple columns given a regex or vector of char positions
+        - Ex. sex and class are stored in a single column
+        - No need for argument names if they are in the correct order
+- Automatically splits on non-alphanumeric values
+        
+```{r}
+separate(res, sex_class, c("sex", "class"))
+```
+
+Can use gather() with separate():
+
+tidy_data <- df %>% gather() %>% separte()
+
+#### spread()
+
+Multiple variables stored in a single column. Similar to separate() 
+
+- separate(data, key, value)
+        - Ex. column 'Test' contains 'Final' or 'Midterm' while another column 'grade' holds grades
+        - make 'final' and 'midterm' hold 'grades'
+
+```{r}
+separate(data, test, grade)
+```
+
+#### select()
+
+A table with reduntant variable information in the rows likely means multiple tables are compiled into a single table.
+
+- Leave 'id' in each table. It is the primary key used in relational databases.
+- `contains()` is a useful side function of `select()` which selects or ignores (`-contains()`) columns based on a regex
+
+```{r}
+table1 <- select(data, column1, column2)
+table2 <- select(data, column3, column4)
+```
+
+#### Some examples
+
+```{r}
+# Accomplish the following three goals:
+#
+# 1. select() all columns that do NOT contain the word "total",
+# since if we have the male and female data, we can always
+# recreate the total count in a separate column, if we want it.
+# Hint: Use the contains() function, which you'll
+# find detailed in 'Special functions' section of ?select.
+#
+# 2. gather() all columns EXCEPT score_range, using
+# key = part_sex and value = count.
+#
+# 3. separate() part_sex into two separate variables (columns),
+# called "part" and "sex", respectively. You may need to check
+# the 'Examples' section of ?separate to remember how the 'into'
+# argument should be phrased.
+#
+sat %>%
+  select(-contains("total")) %>%
+  gather(part_sex, count, -score_range) %>%
+  separate(part_sex, c("part", "sex")) %>%
+  print
+
+# Append two more function calls to accomplish the following:
+#
+# 1. Use group_by() (from dplyr) to group the data by part and
+# sex, in that order.
+#
+# 2. Use mutate to add two new columns, whose values will be
+# automatically computed group-by-group:
+#
+#   * total = sum(count)
+#   * prop = count / total
+#
+sat %>%
+  select(-contains("total")) %>%
+  gather(part_sex, count, -score_range) %>%
+  separate(part_sex, c("part", "sex")) %>%
+  group_by(part, sex) %>%
+  mutate(total = sum(count),
+         prop = count / total
+  ) %>% print
+```

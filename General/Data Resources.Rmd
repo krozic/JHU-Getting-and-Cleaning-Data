@@ -1,0 +1,62 @@
+---
+title: "Data Resources"
+output:
+  html_document:
+    df_print: paged
+---
+
+Countries:
+
+- [United Nations](http://data.un.org/)
+- [U.S.](http://www.data.gov/)
+- [United Kingdom](http://data.gov.uk/)
+- [France](http://www.data.gouv.fr/)
+- [Ghana](http://data.gov.gh/)
+- [Australia](http://data.gov.au/)
+- [Germany](https://www.govdata.de/)
+- [Hong Kong](http://www.gov.hk/en/theme/psi/datasets/)
+- [Japan](http://www.data.go.jp/)
+- [Many more](http://www.data.gov/opendatasites)
+
+Human health:
+
+- [gapminder](http://www.gapminder.org/)
+
+Survey data (US):
+
+- [asdfree](http://www.asdfree.com/)
+
+Infochimps marketplace:
+
+- [Infochimps](http://www.infochimps.com/marketplace)
+
+Kaggle:
+
+- [kaggle](http://www.kaggle.com/)
+
+Collections by data scientists:
+
+- [Hilary Mason](http://bitly.com/bundles/hmason/1)
+- [Peter Skomoroch](https://delicious.com/pskomoroch/dataset)
+- [Jeff Hammerbacher](http://www.quora.com/Jeff-Hammerbacher/Introduction-to-Data-Science-Data-Sets)
+- [Gregory Piatetsky-Shapiro](http://www.kdnuggets.com/gps.html)
+- [Others](http://blog.mortardata.com/post/67652898761/6-dataset-lists-curated-by-data-scientists)
+
+More Specialized Collections:
+
+- [Stanford Large Network Data](https://snap.stanford.edu/data/)
+- [UCI Machine Learning](https://archive.ics.uci.edu/ml/index.php)
+- [KDDnuggets Datasets](https://www.kdnuggets.com/)
+- [CMU Statlib](http://lib.stat.cmu.edu/datasets/)
+- [Gene expression omnibus](https://www.ncbi.nlm.nih.gov/geo/)
+- [ArXiv Data](https://arxiv.org/)
+- [Public Data Sets on Amazon Web Services](https://registry.opendata.aws/)
+
+Some API's with R interfaces
+
+- [twitter](https://developer.twitter.com/en) and twitteR package
+- [figshare](https://figshare.com/) and rfigshare
+- [PLoS](https://plos.org/) and rplos
+- [rOpenSci](https://ropensci.org/)
+- [Facebook](https://developers.facebook.com/) and RFacebook
+- [Google maps](https://developers.google.com/maps/documentation/) and RGoogleMaps

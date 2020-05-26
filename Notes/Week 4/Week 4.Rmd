@@ -1,0 +1,450 @@
+---
+title: "Week 4"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+### Editing Text Variables
+
+#### tolower(), toupper()
+
+- Capital letters make handling the data difficult, since you have to remember names AND case
+- Removing the case with `tolower()` or `toupper()` makes the data simpler
+
+```{r}
+if(!file.exists("./data")){dir.create("./data")}
+fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
+download.file(fileUrl, destfile = "./data/cameras.csv", method = "curl")
+cameraData <- read.csv("./data/cameras.csv")
+
+names(cameraData)
+[1] "address"                      "direction"                    "street"                      
+[4] "crossStreet"                  "intersection"                 "Location.1"                  
+[7] "X2010.Census.Neighborhoods"   "X2010.Census.Wards.Precincts" "Zip.Codes" 
+
+tolower(names(cameraData))
+[1] "address"                      "direction"                    "street"                      
+[4] "crossstreet"                  "intersection"                 "location.1"                  
+[7] "x2010.census.neighborhoods"   "x2010.census.wards.precincts" "zip.codes" 
+```
+
+#### strsplit() 
+
+- Automatically splits variable names if there is an undesirable component (in this case '.')
+
+```{r}
+splitNames = strsplit(names(cameraData), "\\.")
+
+splitNames[[5]]
+[1] "intersection"
+
+splitNames[[6]]
+[1] "Location" "1" 
+```
+
+List recap:
+
+```{r}
+mylist <- list(letters = c("A", "b", "c"), numbers = 1:3, matrix(1:25, ncol = 5))
+
+head(mylist)
+$letters
+[1] "A" "b" "c"
+
+$numbers
+[1] 1 2 3
+
+[[3]]
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+
+mylist[1]
+$letters
+[1] "A" "b" "c"
+
+mylist$letters
+[1] "A" "b" "c"
+
+mylist[[1]]
+[1] "A" "b" "c"
+```
+
+Fixing Vectors with sapply() and strsplit()
+
+- Applies a function to each element in a vector or list
+- Use it to extract the first element of every array position:
+
+```{r}
+splitNames[[6]][1]
+[1] "Location"
+
+firstElement <- function(x){x[1]}
+sapply(splitNames, firstElement)
+[1] "address"      "direction"    "street"       "crossStreet"  "intersection" "Location"     "X2010"       
+[8] "X2010"        "Zip"         
+```
+
+#### sub()
+
+```{r}
+fileUrl1 <- "https://dl.dropboxusercontent.com/u/7710864/data/reviews-apr29.csv"
+fileUrl2 <- "https://dl.dropboxusercontent.com/u/7710864/data/solutions-apr29.csv"
+download.file(fileUrl1, destfile = "./data/reviews.csv", method = "curl")
+download.file(fileUrl2, destfile = "./data/solutions.csv", method = "curl")
+reviews <- read.csv("./data/reviews.csv")
+solutions <- read.csv("./data/solutions.csv")
+```
+
+Unfortunately this doesn't work... again... because it's deleted.
+
+```{r}
+testString <- "test_string"
+
+sub("_", "", names(testString))
+[1] "teststring"
+```
+
+This removes any '_' from the strings, making them just plain characters
+
+#### gsub()
+
+- sub() only replaces the first characters in the string that it finds
+- gsub() replaces ALL the characters that match the regex
+
+```{r}
+testStringtwo <- "this_is_another_test"
+
+sub("_", "", testStringtwo)
+[1] "thisis_another_test"
+
+gsub("_", "", testStringtwo)
+[1] "thisisanothertest"
+```
+
+#### grep() and grepl()
+
+- grep() returns positions where a regex appears  
+- grepl() returns T/F for every position   
+        - can allow you to subset based on a regex
+
+```{r}
+grep("Alameda", cameraData$intersection) #looks in the variable and returns positions where "Alameda" appears
+[1] 65 69 79
+
+table(grepl("Alameda", cameraData$intersection)) #instead returns a T/F result. table() displays it nicely
+FALSE  TRUE 
+   77     3 
+   
+cameraData2 <- cameraData[!grepl("Alameda", cameraData$intersection), ] #only subsets the data where "Alameda" doesn't appear
+
+grep("Alameda", cameraData$intersection, value = TRUE) #returns the actual value at that position
+[1] "E 33rd  & The Alameda"    "The Alameda  & 33rd St"   "Harford \n & The Alameda"
+
+grep("JeffStreet", cameraData$intersection) #"JeffStreet" does not appear, this is the result.
+integer(0)
+
+length(grep("JeffStreet", cameraData$intersection)) #length() makes it easy to tell when a value doesn't appear
+[1] 0
+
+```
+
+#### stringr library
+
+```{r}
+library(stringr)
+nchar("Jeffrey Leek") #number of characters in a string
+[1] 12
+
+substr("Jeffrey Leek", 1, 7) #return the characters in positions 1-7
+[1] "Jeffrey"
+
+paste("Jeffrey", "Leek") #separates by " " by default. 'sep =' can change this
+[1] "Jeffrey Leek"
+
+paste0("jeffrey", "Leek")
+[1] "jeffreyLeek"
+
+str_trim("Jeff     ")
+[1] "Jeff"
+```
+
+#### Important Points About Text in Data Sets
+
+- Names of variables shoudl be:  
+        - All lower case when possible  
+        - Descriptive (Diagnosis vs Dx)  
+        - Not duplicated  
+        - Not have underscores or dots or white spaces  
+
+- Variables with character values:  
+        - Should usually be made into factor variables (depends on application)  
+        - Should be descriptive (use T/F instead of 0/1 and Male/Female vs 0/1 or M/F)  
+        
+### Regular Expressions
+
+- Can be thouht of as a combination of literals and metacharacters
+- To draw an analogy with natural language, think of literal text forming the words of this language, and the metacharacters defining its grammar
+- Have a rich set of metacharacters
+
+- Simplest pattern consists only of literals: a match occurs if the sequence of literals occurs anywhere in the text being tested
+- what if we only want the word "Obama"? or sentences that end in the word "Clinton", or "clinton" or "clinto"?
+
+We need a way to express:
+
+- whitespace word boundaries
+- sets of literals
+- the beginning and end of a line
+- alternatives ("war" or "peace) 
+
+#### Metacharacters
+
+^ represents the start of a line:
+
+```{r}
+^i think
+#This only matches when "i think" is at the start of the line
+```
+
+$ represents the end of a line:
+
+```{r}
+morning$
+#This only matches when "morning" is at the end of the line
+```
+
+[] can be used to contain an 'or' decision:
+
+```{r}
+[Bb][Uu][Ss][Hh]
+#This will match all case versions of the word "Bush" (ex. bush, bUsh, bUSH)
+```
+
+Combine these together to form more powerful searches:
+
+```{r}
+^[Ii] am
+#This will match all cases where "I am" is at the beginning of a line with either case for "I"
+```
+
+You can also specify a range of characters:
+
+```{r}
+^[0-9][a-zA-Z]
+#This will match any "numberletter" combo at the beginning of the line
+```
+
+^ can also indicate logical "NOT" within []:
+
+```{r}
+[^?.]$
+#This will match any line that DOES NOT end with a "?" OR "."
+```
+
+. can be used to refer to "any" character:
+
+```{r}
+9.11
+#This will match 9 and 11 separated by any character
+```
+
+| can be used as "OR":
+
+```{r}
+flood|fire|earthquake|hurricane
+#This will match either "flood" OR "fire" OR "earthquake" OR "hurricane"
+
+^[Gg]ood|[Bb]ad
+#This matches "[Gg]ood" at the beginning, but "[Bb]ad" anywhere.
+```
+
+() can be used to apply an expression to multiple operations:
+```{r}
+^([Gg]ood|[Bb]ad)
+#This matches "[Gg]ood" at the beginning and also "[Bb]ad" at the beginning.
+```
+
+? can be used to indicate the expression is optional:
+
+```{r}
+[Gg]eorge( [Ww]\.)? [Bb]ush
+#This matches "[Gg]eorge" "[Bb]ush" separated by a "W." or "w." or nothing.
+#Also, the "\" is used as an "escape" and indicates "." is a character, not a regex
+```
+
+* can be used to indicate repetition (any amount from 0-infinity):
+
+```{r}
+(.*)
+#this will match any character string, of any length, contained within parentheses.
+```
+
++ is similar to * but requires at least 1 item:
+
+```{r}
+[0-9]+ (.*)[0-9]+
+#This will match any number followed by a space, any parentheses, followed by any number.
+```
+
+{} are interval quantifiers and can be used to specify the min and max number of matches of an expression:
+```{r}
+[Bb]ush( +[^ ]+ +){1,5} debate
+#This will match "[Bb]ush" and "debate" separated by: 
+#at least 1 space, at least 1 non-space, at least 1 space--Occuring between 1-5 times
+#Translates to 5 words separated by spaces
+```
+
+- {m,n} means at least 'm', but not more than 'n' matches
+- {m} means exactly 'm' matches
+- {m,} means at least 'm' matches
+
+() not only limit the scope of alternatives divided by "|", but can be used to "remember" text matched by the subexpression enclosed (we refer to the matched text with \1, \2 etc):
+
+```{r}
+ +([a-zA-Z]+) +\1 +
+#This will match:
+#At least 1 space, at least one character, at least one space, followed by the exact same match within the parentheses.
+#Translates to words or characters repeated after one another, speparated by a space
+```
+
+* is "greedy" so it always matches the longest possible string that satisfies the regular expression:
+
+```{r}
+^s(.*)s
+#This matches any "s" at beginning of the line, any number of characters, ending with "s"
+#this will default the longest possible amount of characters between the "s"s
+# Ex. sitting at starbucks
+```
+
+The "greediness" of * can be turned off with ?:
+
+```{r}
+^s(.*?)s$
+#This will follow the "s" at the beginning with a smaller number of characters, and end the line with "s"
+```
+
+#### Summary
+
+- Regular expressions are used in many different languages
+- They are composed of literals and metacharacters that represent sets or classes of characters/words
+- Text processing via regular expressions is a very powerful way to extract data from "unfriendly" sources (not all data comes as a CSV file)
+- Used with the functions `grep`, `grepl`, `sub`, `gsub` and others that involve searching for text strings
+
+### Dates
+
+```{r}
+d1 = date()
+
+d1
+[1] "Mon May 25 15:09:08 2020"
+
+class(d1)
+[1] "character"
+```
+
+```{r}
+d2 = Sys.Date()
+
+d2
+[1] "2020-05-25"
+
+class(d2)
+[1] "Date"
+```
+
+Formatting Dates:
+
+- `%d`: day as number (0-31)
+- `%a`: abbreviated weekday
+- `%A`: unabbreviated weekday
+- `%m`: month (00-12)
+- `%b`: abbreviated month
+- `%B`: unabbrevidated month
+- `%y`: 2 digit year
+- `%Y`: four digit year
+
+```{r}
+format(d2, "%a %b %d")
+[1] "Mon May 25"
+
+x = c("1jan1960", "2jan1960", "31mar1960", "30jul1960")
+z = as.Date(x, "%d%b%Y")
+
+z
+[1] "1960-01-01" "1960-01-02" "1960-03-31" "1960-07-30"
+
+z[1] - z[2]
+Time difference of -1 days
+
+as.numeric(z[1]-z[2])
+[1] -1
+```
+
+#### Converting to Julian
+
+- # of days since the "origin"
+- It will also tell you what the origin is
+
+```{r}
+weekdays(d2)
+[1] "Monday"
+
+months(d2)
+[1] "May"
+
+julian(d2)
+[1] 18407
+attr(,"origin")
+[1] "1970-01-01"
+```
+
+#### library(lubridate)
+
+- Makes working with dates much simpler
+
+```{r}
+library(lubridate)
+
+ymd("20140108")
+[1] "2014-01-08"
+
+mdy("08/04/2013")
+[1] "2013-08-04"
+
+dmy("03-04-2013")
+[1] "2013-04-03"
+
+ymd_hms("2011-08-03 10:15:03")
+[1] "2011-08-03 10:15:03 UTC"
+
+ymd_hms("2011-08-03 10:15:03", tz = "Pacific/Auckland")
+[1] "2011-08-03 10:15:03 NZST"
+```
+
+- `?Sys.timezone` for more on timezones
+
+Some different syntax in `lubridate`:
+
+```{r}
+x = dmy(c("1jan2013", "2jan2013", "31mar2013", "30jul2013"))
+
+wday(x[1])
+[1] 3
+
+wday(x[1], label = TRUE)
+[1] Tue
+Levels: Sun < Mon < Tue < Wed < Thu < Fri < Sat
+```
+
+#### Summary:
+
+- [lubridate tutorial](http://www.r-statistics.com/2012/03/do-more-with-dates-and-times-in-r-with-lubridate-1-1-0/)
+- [lubridate vignette](http://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html) is the same content
+- Ultimately you want your dates and times as class `Date` or the classes `POSIXct`, `POSIXlt`. more info: `?POSIXlt`
+
