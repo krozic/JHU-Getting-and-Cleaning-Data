@@ -8,23 +8,23 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 Q1.
-newidaho <- mutate(idaho06, agricultureLogical = ACR == 3 & AGS == 6)
-which(newidaho$agricultureLogical == TRUE)
+> newidaho <- mutate(idaho06, agricultureLogical = ACR == 3 & AGS == 6)
+> which(newidaho$agricultureLogical == TRUE)
 
-Q1 <- idaho %>% mutate(agricultureLogical = ACR == 3 & AGS == 6) %>% select(ACR, AGS, agricultureLogical)
-which(Q1$agricultureLogical)
+> Q1 <- idaho %>% mutate(agricultureLogical = ACR == 3 & AGS == 6) %>% select(ACR, AGS, agricultureLogical)
+> which(Q1$agricultureLogical)
 
 Q2.
-instructor <- readJPEG("instructor1.jpg", native = TRUE)
-quantile(instructor, c(0.3, 0.8))
+> instructor <- readJPEG("instructor1.jpg", native = TRUE)
+> quantile(instructor, c(0.3, 0.8))
 
 Q3.
-merge(GDP, edu, by.x = "X", by.y = "CountryCode")
+> merge(GDP, edu, by.x = "X", by.y = "CountryCode")
 
-head(arrange(GDPedu, desc(as.numeric(Gross.domestic.product.2012))), 15)
+> head(arrange(GDPedu, desc(as.numeric(Gross.domestic.product.2012))), 15)
 
 
-for (i in 1:length(GDP$X)) {countryOverlap <- c(countryOverlap, sum(GDP$X[i] == edu$CountryCode))}
+> for (i in 1:length(GDP$X)) {countryOverlap <- c(countryOverlap, sum(GDP$X[i] == edu$CountryCode))}
 
 Found online:
         
@@ -37,15 +37,15 @@ Found online:
 Here they skip the beginning rows, select the columns, and name them.
 
 Q4. 
-GDPedu2$Gross.domestic.product.2012 <- as.numeric(GDPedu2$Gross.domestic.product.2012)
+> GDPedu2$Gross.domestic.product.2012 <- as.numeric(GDPedu2$Gross.domestic.product.2012)
 
-summarise(group_by(GDPedu2, Income.Group), avgGDP = mean(Gross.domestic.product.2012, na.rm = TRUE))
+> summarise(group_by(GDPedu2, Income.Group), avgGDP = mean(Gross.domestic.product.2012, na.rm = TRUE))
 
 Q5.
-quantile(GDPedu2$Gross.domestic.product.2012, c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+> quantile(GDPedu2$Gross.domestic.product.2012, c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
-GDPedu2$GDPgroups <- cut(GDPedu2$Gross.domestic.product.2012, breaks = quantile(GDPedu2$Gross.domestic.product.2012, c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE))
+> GDPedu2$GDPgroups <- cut(GDPedu2$Gross.domestic.product.2012, breaks = quantile(GDPedu2$Gross.domestic.product.2012, c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE))
 
-GDPedu2$GDPgroups <- cut2(GDPedu2$Gross.domestic.product.2012, g = 5)
+> GDPedu2$GDPgroups <- cut2(GDPedu2$Gross.domestic.product.2012, g = 5)
 
-table(GDPedu2$GDPgroups, GDPedu2$Income.Group)
+> table(GDPedu2$GDPgroups, GDPedu2$Income.Group)
